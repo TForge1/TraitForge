@@ -80,7 +80,7 @@ contract TraitForgeNft is ERC721URIStorage, ReentrancyGuard, Ownable {
         address initialOwner,
         address payable _nukeFundAddress,
         address _entropyGeneratorAddress
-    ) ERC721("CustomERC721", "C721") Ownable(initialOwner) {
+    ) ERC721("TraitForgeNft", "C721") Ownable(initialOwner) {
         // Pass initialOwner to Ownable
         nukeFundContract = INukeFund(_nukeFundAddress);
         entropyGenerator = IEntropyGenerator(_entropyGeneratorAddress);

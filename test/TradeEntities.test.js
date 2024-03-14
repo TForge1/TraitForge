@@ -8,19 +8,19 @@ const LISTING_PRICE = ethers.utils.parseEther("1.0");
 
 // Helper function to deploy the contracts
 async function deployContracts() {
-  const CustomERC721 = await ethers.getContractFactory("CustomERC721");
-  const customERC721 = await CustomERC721.deploy();
+  const TraitForgeNft = await ethers.getContractFactory("TraitForgeNft");
+  const traitForgeNft = await TraitForgeNft.deploy();
 
   const EntityTrading = await ethers.getContractFactory("EntityTrading");
-  const entityTrading = await EntityTrading.deploy(customERC721.address);
+  const entityTrading = await EntityTrading.deploy(traitForgeNft.address);
 
-  await customERC721.setApprovalForAll(entityTrading.address, true);
+  await traitForgeNft.setApprovalForAll(entityTrading.address, true);
 
-  return { customERC721, entityTrading };
+  return { traitForgeNft, entityTrading };
 }
 
 describe("EntityTrading", function () {
-  let customERC721;
+  let traitForgeNft;
   let entityTrading;
   let owner;
   let buyer;
@@ -28,7 +28,7 @@ describe("EntityTrading", function () {
 
   before(async function () {
     // Deploy contracts before each test case
-    ({ customERC721, entityTrading } = await deployContracts());
+    ({ traitForgeNft, entityTrading } = await deployContracts());
 
     // Get the owner and buyer accounts
     [owner, buyer] = await ethers.getSigners();
@@ -38,8 +38,8 @@ describe("EntityTrading", function () {
     await entityTrading.setNukeFundAddress(nukeFundAddress);
 
     // Mint and approve the NFT for trading
-    await customERC721.mint(owner.address, TOKEN_ID);
-    await customERC721.approve(entityTrading.address, TOKEN_ID);
+    await traitForgeNft.mint(owner.address, TOKEN_ID);
+    await traitForgeNft.approve(entityTrading.address, TOKEN_ID);
   });
 
   it("should list an NFT for sale", async function () {
@@ -82,7 +82,7 @@ describe("EntityTrading", function () {
     expect(listing.isActive).to.be.false;
 
     // Check if the NFT is transferred back to the owner
-    const ownerBalance = await customERC721.balanceOf(owner.address);
+    const ownerBalance = await traitForgeNft.balanceOf(owner.address);
     expect(ownerBalance).to.equal(1);
   });
 

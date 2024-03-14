@@ -45,7 +45,7 @@ describe("EntropyGenerator", function () {
   });
 
   it("should retrieve the next entropy", async function () {
-    // Mock the allowed caller to be the CustomERC721 contract
+    // Mock the allowed caller to be the TraitForgeNft contract
     await entropyGenerator.setAllowedCaller(allowedCaller.address);
 
     // Retrieve the next entropy

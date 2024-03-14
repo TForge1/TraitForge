@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.20;
 
-import "./CustomERC721.sol";
+import "./TraitForgeNft.sol";
 
-contract EntityMerging is CustomERC721, IEntityMerging {
+contract EntityMerging is TraitForgeNft, IEntityMerging {
     IEntityMerging private entityMergingContract;
     uint256 private _currentTokenId = 0;
 
@@ -12,7 +12,7 @@ contract EntityMerging is CustomERC721, IEntityMerging {
         uint fee;
     }
 
-    address public customERC721ContractAddress;
+    address public traitForgeNftContractAddress;
 
     mapping(uint256 => Listing) public listings;
     mapping(uint256 => uint256) forgerListingFee;
@@ -35,9 +35,9 @@ contract EntityMerging is CustomERC721, IEntityMerging {
 
     constructor(
         address initialOwner,
-        address payable nukeFundAddress,
+        address payable _nukeFundAddress,
         address entropyGeneratorAddress
-    ) CustomERC721(initialOwner, nukeFundAddress, entropyGeneratorAddress) {}
+    ) TraitForgeNft(initialOwner, _nukeFundAddress, entropyGeneratorAddress) {}
 
     function setMergingContract(address _mergingContract) external onlyOwner {
         entityMergingContract = IEntityMerging(_mergingContract);

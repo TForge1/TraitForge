@@ -13,14 +13,14 @@ describe("EntityMerging", () => {
   beforeEach(async () => {
     [owner, user1, user2] = await ethers.getSigners();
 
-    // Deploy CustomERC721 contract
-    const CustomERC721 = await ethers.getContractFactory("CustomERC721");
-    const customERC721 = await CustomERC721.deploy(
+    // Deploy TraitForgeNft contract
+    const TraitForgeNft = await ethers.getContractFactory("TraitForgeNft");
+    const traitForgeNft = await TraitForgeNft.deploy(
       owner.address,
       user2.address,
       user1.address
     );
-    await customERC721.deployed();
+    await traitForgeNft.deployed();
 
     // Deploy EntityMerging contract
     EntityMerging = await ethers.getContractFactory("EntityMerging");
@@ -31,13 +31,13 @@ describe("EntityMerging", () => {
     );
     await entityMerging.deployed();
 
-    // Set customERC721ContractAddress in the EntityMerging contract
-    await entityMerging.setCustomERC721ContractAddress(customERC721.address);
+    // Set traitForgeNftContractAddress in the EntityMerging contract
+    await entityMerging.setTraitForgeNftContractAddress(traitForgeNft.address);
 
     // Mint some tokens for testing
-    await customERC721.mint(owner.address, 1);
-    await customERC721.mint(user1.address, 2);
-    await customERC721.mint(user2.address, 3);
+    await traitForgeNft.mint(owner.address, 1);
+    await traitForgeNft.mint(user1.address, 2);
+    await traitForgeNft.mint(user2.address, 3);
   });
 
   describe("listForBreeding", () => {

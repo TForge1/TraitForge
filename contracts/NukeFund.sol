@@ -1,12 +1,12 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.20;
 
-import "./CustomERC721.sol";
+import "./TraitForgeNft.sol";
 import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 
-// Interface to interact with the CustomERC721 contract
-interface ICustomERC721 {
+// Interface to interact with the TraitForgeNft contract
+interface ITraitForgeNft {
     function ownerOf(uint256 tokenId) external view returns (address);
 
     function getTokenAge(uint256 tokenId) external view returns (uint256);
@@ -22,7 +22,7 @@ interface ICustomERC721 {
 
 contract NukeFund is ReentrancyGuard, Ownable {
     uint256 private fund;
-    ICustomERC721 public erc721Contract;
+    ITraitForgeNft public erc721Contract;
     address payable public devAddress;
 
     // Events for logging contract activities
@@ -36,7 +36,7 @@ contract NukeFund is ReentrancyGuard, Ownable {
         address _erc721Address,
         address initialOwner
     ) Ownable(initialOwner) {
-        erc721Contract = ICustomERC721(_erc721Address);
+        erc721Contract = ITraitForgeNft(_erc721Address);
     }
 
     // Fallback function to receive ETH and update fund balance
@@ -56,7 +56,7 @@ contract NukeFund is ReentrancyGuard, Ownable {
     function setERC721ContractAddress(
         address _erc721Address
     ) external onlyOwner {
-        erc721Contract = ICustomERC721(_erc721Address);
+        erc721Contract = ITraitForgeNft(_erc721Address);
         emit ERC721ContractAddressUpdated(_erc721Address); // Emit an event when the address is updated.
     }
 
@@ -94,7 +94,7 @@ contract NukeFund is ReentrancyGuard, Ownable {
 
         uint256 entropy = erc721Contract.getEntropy(tokenId); // Corrected line
         // Assume this is stored within NukeFund or accessible somehow
-        // Use getTokenAge from the ERC721 contract (ICustomERC721) to get the age in seconds
+        // Use getTokenAge from the ERC721 contract (ITraitForgeNft) to get the age in seconds
         uint256 ageInSeconds = erc721Contract.getTokenAge(tokenId);
 
         uint256 ageInDays = ageInSeconds / (24 * 60 * 60); // convert age from seconds to days

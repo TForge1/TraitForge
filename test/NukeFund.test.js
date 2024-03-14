@@ -9,7 +9,7 @@ describe("NukeFund", function () {
     [owner, user1] = await ethers.getSigners();
 
     // Deploy ERC721Contract
-    const ERC721Contract = await ethers.getContractFactory("CustomERC721");
+    const ERC721Contract = await ethers.getContractFactory("TraitForgeNft");
     erc721Contract = await ERC721Contract.deploy();
     await erc721Contract.deployed();
 
@@ -20,7 +20,7 @@ describe("NukeFund", function () {
   });
 
   it("should allow the owner to update the ERC721 contract address", async function () {
-    const newERC721Contract = await ethers.getContractFactory("CustomERC721");
+    const newERC721Contract = await ethers.getContractFactory("TraitForgeNft");
     const newERC721Instance = await newERC721Contract.deploy();
 
     await expect(

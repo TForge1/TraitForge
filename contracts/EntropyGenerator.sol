@@ -18,10 +18,10 @@ contract EntropyGenerator is Ownable {
     event AllowedCallerUpdated(address allowedCaller);
 
     constructor(
-        address _CustomERC721,
+        address _TraitForgeNft,
         address initialOwner
     ) Ownable(initialOwner) {
-        allowedCaller = _CustomERC721;
+        allowedCaller = _TraitForgeNft;
     }
 
     // Modifier to restrict certain functions to the allowed caller
