@@ -35,7 +35,7 @@ interface IEntityMerging {
     ) external view returns (uint256 forgerEntropy, uint256 mergerEntropy);
 }
 
-contract CustomERC721 is ERC721URIStorage, ReentrancyGuard, Ownable {
+contract TraitForgeNft is ERC721URIStorage, ReentrancyGuard, Ownable {
     IEntityMerging private entityMergingContract;
     IDAOFund public daoFund;
     INukeFund public nukeFundContract;
