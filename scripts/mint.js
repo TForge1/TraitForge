@@ -1,28 +1,23 @@
-const hre = require("hardhat");
-
-const CustomERC721ABI = require("../artifacts/contracts/CustomERC721.sol/CustomERC721.json").abi;
+const { ethers } = require("hardhat");
 
 async function main() {
+    const TraitForgeNftAddress = "0x5FbDB2315678afecb367f032d93F642f64180aa3";
+    const signer = (await ethers.getSigners())[0]; // Assuming you want to mint using the first signer
 
-    const customERC721Address = "0x1291Be112d480055DaFd8a610b7d1e203891C274";
-
-    // Get the contract instance
-    const customERC721 = await hre.ethers.getContractAt(CustomERC721ABI, customERC721Address);
+    // Correct usage of getContractAt with the contract name and address
+    const TraitForgeNft = await ethers.getContractAt("TraitForgeNft", TraitForgeNftAddress, signer);
 
     // Minting a token with a manual gas limit
-    const mintTx = await customERC721.mintToken("0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266", {
-        value: hre.ethers.utils.parseEther("0.01"),
+    const mintTx = await TraitForgeNft.mintToken(signer.address, {
+        value: ethers.utils.parseEther("0.01"),
         gasLimit: 500000 // Manually set gas limit
     });
-    
+
     await mintTx.wait();
     console.log("Token minted successfully.");
 }
 
-main()
-    .then(() => process.exit(0))
-    .catch((error) => {
-        console.error(error);
-        process.exit(1);
-    });
-
+main().then(() => process.exit(0)).catch(error => {
+    console.error(error);
+    process.exit(1);
+});

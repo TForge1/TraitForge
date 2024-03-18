@@ -8,7 +8,6 @@ import "./ITraitForgeNft.sol";
 import "../EntityMerging/IEntityMerging.sol";
 import "../Entropygenerator/IEntropyGenerator.sol";
 
-
 contract TraitForgeNft is
     ITraitForgeNft,
     ERC721URIStorage,
@@ -156,7 +155,7 @@ contract TraitForgeNft is
 
         distributeFunds(msg.value);
 
-        emit Minted(to, newItemId, entropyValue);
+        emit Minted(msg.sender, newItemId, entropyValue);
     }
 
     function getTokenCreationTimestamp(

@@ -40,7 +40,7 @@ async function main() {
 
   // Deploy EntropyGenerator with the address of the TraitForgeNft and deployer's address as the initialOwner
   const EntropyGenerator = await hre.ethers.getContractFactory("EntropyGenerator");
-  const entropyGenerator = await EntropyGenerator.deploy(traitForgeNft.address, deployer.address);
+  const entropyGenerator = await EntropyGenerator.deploy(traitForgeNft.address);
   await entropyGenerator.deployed();
   console.log("EntropyGenerator deployed to:", entropyGenerator.address);
 
