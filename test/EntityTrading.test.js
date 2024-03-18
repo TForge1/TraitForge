@@ -7,39 +7,42 @@ const LISTING_PRICE = ethers.utils.parseEther("1.0");
 
 // Helper function to deploy the contracts
 async function deployContracts() {
-  const CustomERC721 = await ethers.getContractFactory("CustomERC721");
-  const customERC721 = await CustomERC721.deploy();
+  const TraitForgeNft = await ethers.getContractFactory("TraitForgeNft");
+  const traitForgeNft = await TraitForgeNft.deploy();
 
   const EntityTrading = await ethers.getContractFactory("EntityTrading");
-  const entityTrading = await EntityTrading.deploy(customERC721.address);
+  const entityTrading = await EntityTrading.deploy(traitForgeNft.address);
 
-  await customERC721.setApprovalForAll(entityTrading.address, true);
+  await traitForgeNft.setApprovalForAll(entityTrading.address, true);
 
-  return { customERC721, entityTrading };
+  return { traitForgeNft, entityTrading };
 }
 
 describe("EntityTrading", function () {
-  let customERC721;
+  let traitForgeNft;
   let entityTrading;
   let owner;
   let buyer;
   let nukeFundAddress;
 
   before(async function () {
-    // Deploy contracts before each test case
-    ({ customERC721, entityTrading } = await deployContracts());
+    // Deploy contracts
+    ({ traitForgeNft, entityTrading } = await deployContracts());
+  
+    // Get signers
+    [owner, buyer, other] = await ethers.getSigners();
+  
+    // Mint an NFT to the owner
+    const mintPrice = await traitForgeNft.calculateMintPrice();
+    await traitForgeNft.connect(owner).mintToken(owner.address, { value: mintPrice });
+  
+    // Get the tokenId of the minted NFT (assuming sequential minting starting at 1 and this is the first NFT)
+    const tokenId = 1;
 
-    // Get the owner and buyer accounts
-    [owner, buyer] = await ethers.getSigners();
-
-    // Set NukeFund address
-    nukeFundAddress = await owner.getAddress();
-    await entityTrading.setNukeFundAddress(nukeFundAddress);
-
-    // Mint and approve the NFT for trading
-    await customERC721.mint(owner.address, TOKEN_ID);
-    await customERC721.approve(entityTrading.address, TOKEN_ID);
+    // Approve the EntityTrading contract to transfer the NFT on behalf of the owner
+    await traitForgeNft.connect(owner).approve(entityTrading.address, tokenId);
   });
+  
 
   it("should list an NFT for sale", async function () {
     await entityTrading.listNFTForSale(TOKEN_ID, LISTING_PRICE);
@@ -81,14 +84,12 @@ describe("EntityTrading", function () {
     expect(listing.isActive).to.be.false;
 
     // Check if the NFT is transferred back to the owner
-    const ownerBalance = await customERC721.balanceOf(owner.address);
+    const ownerBalance = await traitForgeNft.balanceOf(owner.address);
     expect(ownerBalance).to.equal(1);
   });
 
   it("should handle NukeFund contributions correctly", async function () {
-    const initialNukeFundBalance = await ethers.provider.getBalance(
-      nukeFundAddress
-    );
+    const initialNukeFundBalance = await ethers.provider.getBalance(nukeFundAddress);
 
     await entityTrading.listNFTForSale(TOKEN_ID, LISTING_PRICE);
 
@@ -99,11 +100,7 @@ describe("EntityTrading", function () {
       .withArgs(entityTrading.address, LISTING_PRICE.div(10));
 
     // Check the NukeFund balance after the purchase
-    const finalNukeFundBalance = await ethers.provider.getBalance(
-      nukeFundAddress
-    );
-    expect(finalNukeFundBalance.sub(initialNukeFundBalance)).to.equal(
-      LISTING_PRICE.div(10)
-    );
+    const finalNukeFundBalance = await ethers.provider.getBalance(nukeFundAddress);
+    expect(finalNukeFundBalance.sub(initialNukeFundBalance)).to.equal(LISTING_PRICE.div(10));
   });
 });

@@ -1,4 +1,7 @@
 require("@nomiclabs/hardhat-ethers");
+require("@nomiclabs/hardhat-waffle");
+// Your hardhat configuration continues here...
+
 
 module.exports = {
   solidity: "0.8.20",
