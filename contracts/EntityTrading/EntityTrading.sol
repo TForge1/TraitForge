@@ -4,39 +4,17 @@ pragma solidity ^0.8.20;
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
 import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
-import "../TraitForgeNft/TraitForgeNft.sol";
+import "./IEntityTrading.sol";
+import "../TraitForgeNft/ITraitForgeNft.sol";
 
-
-contract EntityTrading is ReentrancyGuard, Ownable {
-    TraitForgeNft public traitForgeNft;
-
-    struct Listing {
-        address seller; // address of NFT seller
-        uint256 price; // Price of the NFT in wei
-        bool isActive; // flag to check if the listing is active
-    }
-
+contract EntityTrading is IEntityTrading, ReentrancyGuard, Ownable {
+    ITraitForgeNft public nftContract;
     address payable public nukeFundAddress;
 
     mapping(uint256 => Listing) public listings;
 
-    event NFTListed(
-        uint256 indexed tokenId,
-        address indexed seller,
-        uint256 price
-    );
-    event NFTSold(
-        uint256 indexed tokenId,
-        address indexed seller,
-        address indexed buyer,
-        uint256 price,
-        uint256 nukeFundContribution
-    );
-    event ListingCanceled(uint256 indexed tokenId, address indexed seller);
-    event NukeFundContribution(address indexed from, uint256 amount);
-
-    constructor(address traitForgeNftAddress) Ownable(msg.sender) {
-        traitForgeNft = TraitForgeNft(traitForgeNftAddress);
+    constructor(address _traitForgeNft) Ownable(msg.sender) {
+        nftContract = ITraitForgeNft(_traitForgeNft);
     }
 
     // allows the owner to set NukeFund address
@@ -53,16 +31,16 @@ contract EntityTrading is ReentrancyGuard, Ownable {
     ) public nonReentrant {
         require(price > 0, "Price must be greater than zero");
         require(
-            traitForgeNft.ownerOf(tokenId) == msg.sender,
+            nftContract.ownerOf(tokenId) == msg.sender,
             "Sender must be the NFT owner."
         );
         require(
-            traitForgeNft.getApproved(tokenId) == address(this) ||
-                traitForgeNft.isApprovedForAll(msg.sender, address(this)),
+            nftContract.getApproved(tokenId) == address(this) ||
+                nftContract.isApprovedForAll(msg.sender, address(this)),
             "Contract must be approved to transfer the NFT."
         );
 
-        traitForgeNft.transferFrom(msg.sender, address(this), tokenId); // trasnfer NFT to contract
+        nftContract.transferFrom(msg.sender, address(this), tokenId); // trasnfer NFT to contract
         listings[tokenId] = Listing(msg.sender, price, true); // create new listing
 
         emit NFTListed(tokenId, msg.sender, price);
@@ -84,7 +62,7 @@ contract EntityTrading is ReentrancyGuard, Ownable {
 
         // transfer NFT from contract to buyer
         payable(listing.seller).transfer(sellerProceeds); // transfer proceeds to the seller
-        traitForgeNft.transferFrom(address(this), msg.sender, tokenId); // transfer NFT to the buyer
+        nftContract.transferFrom(address(this), msg.sender, tokenId); // transfer NFT to the buyer
 
         delete listings[tokenId]; // remove listing
 
@@ -108,12 +86,12 @@ contract EntityTrading is ReentrancyGuard, Ownable {
         require(listing.isActive, "Listing is not active.");
         // Before transferring the NFT back, ensure the contract has permission
         require(
-            traitForgeNft.isApprovedForAll(listing.seller, address(this)) ||
-                traitForgeNft.getApproved(tokenId) == address(this),
+            nftContract.isApprovedForAll(listing.seller, address(this)) ||
+                nftContract.getApproved(tokenId) == address(this),
             "Contract must have transfer approval"
         );
 
-        traitForgeNft.transferFrom(address(this), msg.sender, tokenId); // transfer the nft back to seller
+        nftContract.transferFrom(address(this), msg.sender, tokenId); // transfer the nft back to seller
 
         delete listings[tokenId]; // mark the listing as inactive or delete it
 

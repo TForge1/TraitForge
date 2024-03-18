@@ -120,4 +120,7 @@ contract NukeFund is INukeFund, ReentrancyGuard, Ownable {
         // Assuming tokenAgeInSeconds is the age of the token since its creation, check if it's at least 3 days old
         return tokenAgeInSeconds >= 3 days;
     }
+
 }
+
+

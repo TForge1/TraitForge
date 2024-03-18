@@ -8,6 +8,7 @@ import "./ITraitForgeNft.sol";
 import "../EntityMerging/IEntityMerging.sol";
 import "../Entropygenerator/IEntropyGenerator.sol";
 
+
 contract TraitForgeNft is
     ITraitForgeNft,
     ERC721URIStorage,
